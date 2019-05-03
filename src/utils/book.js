@@ -143,12 +143,29 @@ export function addCss(href) {
   document.getElementsByTagName('head')[0].appendChild(link)
 }
 
+export function removeCss(href) {
+  const links = document.getElementsByTagName('link')
+  for (let i = links.length; i >= 0; i--) {
+    const link = links[i]
+    if (link && link.getAttribute('href') && link.getAttribute('href') === href) {
+      link.parentNode.removeChild(link)
+    }
+  }
+}
+
 export function getReadTimeByMinute(fileName) {
   if (!getReadTime(fileName)) {
     return 0
   } else {
     return Math.ceil(getReadTime(fileName) / 60)
   }
+}
+
+export function removeAllCss() {
+  removeCss(process.env.VUE_APP_RES_URL + '/theme/theme_default.css')
+  removeCss(process.env.VUE_APP_RES_URL + '/theme/theme_eye.css')
+  removeCss(process.env.VUE_APP_RES_URL + '/theme/theme_gold.css')
+  removeCss(process.env.VUE_APP_RES_URL + '/theme/theme_night.css')
 }
 
 export function getCategoryName(id) {

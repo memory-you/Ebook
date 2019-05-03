@@ -4,7 +4,8 @@ import {
 } from 'vuex'
 import {
   themeList,
-  addCss
+  addCss,
+  removeAllCss
 } from './book'
 
 export const ebookMixin = {
@@ -57,6 +58,7 @@ export const ebookMixin = {
       'setSpeakingIconBottom'
     ]),
     initGlobalStyle() {
+      removeAllCss()
       switch (this.defaultTheme) {
         case 'Default':
           addCss(process.env.VUE_APP_RES_URL + '/theme/theme_default.css')
