@@ -2,7 +2,7 @@
   <transition name="slide-up">
     <div
       class="setting-wrapper"
-      v-show="ifSettingShow"
+      v-show="menuVisible && settingVisible === 1"
     >
       <div class="setting-theme">
         <div
@@ -14,20 +14,41 @@
           <div
             class="preview"
             :style="{background: item.style.body.background}"
-            :class="{'no-border': item.style.body.background !== '#fff'}"
+            :class="{'selected': item.name === defaultTheme}"
           ></div>
           <div
             class="text"
-            :class="{'selected': index === defaultTheme}"
-          >{{item.name}}</div>
+            :class="{'selected': item.name === defaultTheme}"
+          >{{item.alias}}</div>
         </div>
       </div>
-
     </div>
+  </transition>
+
 </template>
 
 <script>
-export default {}
+import { ebookMixin } from '../../utils/mixin'
+import { themeList } from '../../utils/book'
+import { saveTheme, initGlobalStyle } from '../../utils/localStorage'
+export default {
+  mixins: [ebookMixin],
+  computed: {
+    themeList() {
+      return themeList(this)
+    }
+  },
+  methods: {
+    setTheme(index) {
+      const theme = this.themeList[index]
+      this.setDefaultTheme(theme.name).then(() => {
+        this.currentBook.rendition.themes.select(this.defaultTheme)
+        this.initGlobalStyle()
+      })
+      saveTheme(this.fileName, theme.name)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -38,7 +59,7 @@ export default {}
   left: 0;
   z-index: 101;
   width: 100%;
-  height: px2rem(60);
+  height: px2rem(80);
   background: white;
   box-shadow: 0 px2rem(-8) px2rem(8) rgba(0, 0, 0, 0.15);
   .setting-font-size {
@@ -115,8 +136,8 @@ export default {}
         flex: 1;
         border: px2rem(1) solid #ccc;
         box-sizing: border-box;
-        &.no-border {
-          border: none;
+        &.select {
+          box-shadow: 0 px2rem(4) px2rem(6) 0 rgba(0, 0, 0, 0.1);
         }
       }
       .text {
