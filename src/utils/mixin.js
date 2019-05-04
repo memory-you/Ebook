@@ -7,6 +7,9 @@ import {
   addCss,
   removeAllCss
 } from './book'
+import {
+  saveLocation
+} from './localStorage'
 
 export const ebookMixin = {
   computed: {
@@ -74,6 +77,33 @@ export const ebookMixin = {
           break
         default:
           addCss(process.env.VUE_APP_RES_URL + '/theme/theme_default.css')
+      }
+    },
+    refreshLocation() {
+      const currentLocation = this.currentBook.rendition.currentLocation()
+      const startCfi = currentLocation.start.cfi
+      const progress = this.currentBook.locations.percentageFromCfi(
+        startCfi
+      )
+      this.setProgress(Math.floor(progress * 100))
+      this.setSection(currentLocation.start.index)
+      saveLocation(this.fileName, startCfi)
+    },
+    display(target, cb) {
+      if (target) {
+        return this.currentBook.rendition.display(target).then(() => {
+          this.refreshLocation()
+          if (cb) {
+            cb()
+          }
+        })
+      } else {
+        return this.rendition.display().then(() => {
+          this.refreshLocation()
+          if (cb) {
+            cb()
+          }
+        })
       }
     }
   }

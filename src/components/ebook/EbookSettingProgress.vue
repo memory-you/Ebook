@@ -6,7 +6,7 @@
     >
       <div class="setting-progress">
         <div class="read-time-wrapper">
-          <span class="read-time-text"></span>
+          <span class="read-time-text">{{getReadTimeText()}}</span>
           <span class="icon-forward"></span>
         </div>
         <div class="progress-wrapper">
@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="text-wrapper">
-          <span class="progress-section-text"></span>
+          <span class="progress-section-text">{{getSectionName}}</span>
           <span class="progress-text">({{bookAvailable ? progress + '%' : $t('book.loading')}})</span>
         </div>
       </div>
@@ -46,41 +46,42 @@
 
 <script>
 import { ebookMixin } from '../../utils/mixin'
-import { saveProgress } from '../../utils/localStorage'
+import { saveProgress, getReadTime } from '../../utils/localStorage'
+import { getReadTimeByMinute } from '../../utils/book'
 export default {
   mixins: [ebookMixin],
+  computed: {
+    getSectionName() {
+      if (this.section) {
+        const sectionInfo = this.currentBook.section(this.section)
+        if (sectionInfo && sectionInfo.href) {
+          return this.currentBook.navigation.get(sectionInfo.href).label
+        } else {
+          return ''
+        }
+      } else {
+        return ''
+      }
+    }
+  },
   data() {
     return {}
   },
   methods: {
     prevSection() {
-      if (this.section > 0 && !this.isProgressLoading) {
-        this.isProgressLoading = true
+      if (this.section > 0 && this.bookAvailable) {
         this.setSection(this.section - 1).then(() => {
-          this.displaySection(() => {
-            this.updateProgressBg()
-            this.isProgressLoading = false
-          })
+          this.displaySection()
         })
       }
-    },
-    displayProgress() {
-      const cfi = this.currentBook.locations.cfiFromPercentage(
-        this.progress / 100
-      )
-      this.currentBook.rendition.display(cfi)
     },
     nextSection() {
       if (
         this.currentBook.spine.length - 1 > this.section &&
-        !this.isProgressLoading
+        this.bookAvailable
       ) {
-        this.isProgressLoading = true
         this.setSection(this.section + 1).then(() => {
-          this.displaySection(() => {
-            this.updateProgressBg()
-            this.isProgressLoading = false
-          })
+          this.displaySection()
         })
       }
     },
@@ -98,6 +99,32 @@ export default {
     },
     updateProgressBg() {
       this.$refs.progress.style.backgroundSize = `${this.progress}% 100%`
+    },
+    displayProgress() {
+      const cfi = this.currentBook.locations.cfiFromPercentage(
+        this.progress / 100
+      )
+      this.display(cfi)
+    },
+    displaySection() {
+      const sectionInfo = this.currentBook.section(this.section)
+      if (sectionInfo && sectionInfo.href) {
+        this.display(sectionInfo.href)
+      }
+    },
+    getReadTimeText() {
+      return this.$t('book.haveRead').replace(
+        '$1',
+        getReadTimeByMinute(this.fileName)
+      )
+    },
+    getReadTimeByMinute() {
+      const readTime = getReadTime(this.fileName)
+      if (!readTime) {
+        return 0
+      } else {
+        return Math.ceil(readTime / 60)
+      }
     }
   },
   updated() {
