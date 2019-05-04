@@ -168,6 +168,10 @@ export function removeAllCss() {
   removeCss(process.env.VUE_APP_RES_URL + '/theme/theme_night.css')
 }
 
+export function flatten(array) {
+  return [].concat(...array.map(item => [].concat(item, ...flatten(item.subitems))))
+}
+
 export function getCategoryName(id) {
   switch (id) {
     case 1:

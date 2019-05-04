@@ -44,11 +44,6 @@ export default {
       }
       this.setMenuVisible(!this.menuVisible)
     },
-    hideTitleAndMenu() {
-      this.setMenuVisible(false)
-      this.setSettingVisible(-1)
-      this.setFontFamilyVisible(false)
-    },
     initTheme() {
       let defaultTheme = getTheme(this.rendition)
       if (!defaultTheme) {
@@ -128,6 +123,39 @@ export default {
         event.stopPropagation()
       })
     },
+    parseBook() {
+      this.book.loaded.cover.then(cover => {
+        this.book.archive.createUrl(cover).then(url => {
+          this.setCover(url)
+        })
+      })
+      this.book.loaded.metadata.then(metadata => {
+        this.setMetadata(metadata)
+      })
+      this.book.loaded.navigation.then(nav => {
+        console.log(nav)
+        const navItem = (function flatten(arr) {
+          return [].concat(...arr.map(v => [v, ...flatten(v.subitems)]))
+        })(nav.toc)
+
+        function find(item, v = 0) {
+          const parent = navItem.filter(it => it.id === item.parent)[0]
+          return !item.parent ? v : parent ? find(parent, ++v) : v
+        }
+
+        navItem.forEach(item => {
+          item.level = find(item)
+          item.total = 0
+          item.pagelist = []
+          if (item.href.match(/^(.*)\.html$/)) {
+            item.idhref = item.href.match(/^(.*)\.html$/)[1]
+          } else if (item.href.match(/^(.*)\.xhtml$/)) {
+            item.idhref = item.href.match(/^(.*)\.xhtml$/)[1]
+          }
+        })
+        this.setNavigation(navItem)
+      })
+    },
     initEpub() {
       const url =
         process.env.VUE_APP_RES_URL + '/epub/' + this.fileName + '.epub'
@@ -135,6 +163,7 @@ export default {
       this.setCurrentBook(this.book)
       this.initRendition()
       this.initGesture()
+      this.parseBook()
       this.book.ready
         .then(() => {
           return this.book.locations.generate(
