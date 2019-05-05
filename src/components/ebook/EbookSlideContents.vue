@@ -11,7 +11,7 @@
           :placeholder="$t('book.searchHint')"
           @click="showSearchPage()"
           v-model="searchText"
-          @keyup.enter="search()"
+          @keyup.enter.exact="search()"
           ref="searchInput"
         >
       </div>
@@ -59,11 +59,12 @@
         class="slide-contents-item"
         v-for="(item, index) in navigation"
         :key="index"
-        @click="displayNavigation(item.href)"
+        @click="displayContent(item)"
       >
         <span
           class="slide-contents-item-label"
           :class="{'selected': section === index}"
+          :style="contentItemStyle(item)"
         >{{item.label.trim()}}</span>
         <span class="slide-contents-item-page">{{item.page}}</span>
       </div>
@@ -80,7 +81,7 @@
         v-for="(item, index) in searchList"
         :key="index"
         v-html="item.excerpt"
-        @click="display(item.cfi, true)"
+        @click="displayContent(item.cfi, true)"
       >
       </div>
     </scroll>
@@ -90,6 +91,7 @@
 <script>
 import { ebookMixin } from '../../utils/mixin'
 import Scroll from '../common/Scroll'
+import { px2rem } from '../../utils/utils'
 
 export default {
   mixins: [ebookMixin],
@@ -104,28 +106,30 @@ export default {
     }
   },
   methods: {
-    displayNavigation(targe) {
-      this.display(targe, () => {
-        this.hideTitleAndMenu()
-      })
-    },
     showSearchPage() {
       this.searchVisible = true
     },
     hideSearchPage() {
       this.searchVisible = false
     },
+    contentItemStyle(item) {
+      return {
+        marginLeft: `${px2rem(item.level * 15)}rem`
+      }
+    },
     search() {
-      this.doSearch(this.searchText).then(result => {
-        this.searchList = result.map(item => {
-          item.excerpt = item.excerpt.replace(
-            this.searchText,
-            `<span class="content-search-text">${this.searchText}</span>`
-          )
-          return item
+      if (this.searchText && this.searchText.length > 0) {
+        this.doSearch(this.searchText).then(result => {
+          this.searchList = result.map(item => {
+            item.excerpt = item.excerpt.replace(
+              this.searchText,
+              `<span class="content-search-text">${this.searchText}</span>`
+            )
+            return item
+          })
+          this.$refs.searchInput.blur()
         })
-        this.$refs.searchInput.blur()
-      })
+      }
     },
     doSearch(q) {
       return Promise.all(
@@ -136,6 +140,14 @@ export default {
             .finally(item.unload.bind(item))
         )
       ).then(results => Promise.resolve([].concat.apply([], results)))
+    },
+    displayContent(target, highlight = false) {
+      this.display(target, () => {
+        this.hideTitleAndMenu()
+        if (highlight) {
+          this.currentBook.rendition.annotations.highlight(target)
+        }
+      })
     }
   }
 }
