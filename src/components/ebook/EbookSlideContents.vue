@@ -11,7 +11,7 @@
           :placeholder="$t('book.searchHint')"
           @click="showSearchPage()"
           v-model="searchText"
-          @keyup.enter.exact="search()"
+          @keyup.enter="search()"
           ref="searchInput"
         >
       </div>
@@ -59,7 +59,7 @@
         class="slide-contents-item"
         v-for="(item, index) in navigation"
         :key="index"
-        @click="displayContent(item)"
+        @click="displayContent(item.href)"
       >
         <span
           class="slide-contents-item-label"
