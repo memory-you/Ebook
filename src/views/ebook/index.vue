@@ -6,6 +6,8 @@
     <ebook-title></ebook-title>
     <ebook-reader></ebook-reader>
     <ebook-menu></ebook-menu>
+    <ebook-bookmark>
+    </ebook-bookmark>
   </div>
 </template>
 
@@ -13,6 +15,7 @@
 import EbookReader from '../../components/ebook/EbookReader.vue'
 import EbookTitle from '../../components/ebook/EbookTitle.vue'
 import EbookMenu from '../../components/ebook/EbookMenu.vue'
+import EbookBookmark from '../../components/ebook/EbookBookmark.vue'
 import { getReadTime, saveReadTime } from '../../utils/localStorage'
 import { setInterval, clearInterval } from 'timers'
 import { ebookMixin } from '../../utils/mixin'
@@ -21,7 +24,8 @@ export default {
   components: {
     EbookReader,
     EbookTitle,
-    EbookMenu
+    EbookMenu,
+    EbookBookmark
   },
   watch: {
     offsetY(v) {
@@ -73,7 +77,9 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
-  height: 1005;
+  height: 100%;
 }
 </style>

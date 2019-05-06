@@ -77,9 +77,6 @@ const book = {
     },
     'SET_IS_BOOKMARK': (state, isBookmark) => {
       state.isBookmark = isBookmark
-    },
-    'SET_SPEAKING_ICON_BOTTOM': (state, speakingIconBottom) => {
-      state.speakingIconBottom = speakingIconBottom
     }
   }
 }
