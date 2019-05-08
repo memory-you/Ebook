@@ -49,11 +49,6 @@ import { ebookMixin } from '../../utils/mixin'
 import { saveProgress } from '../../utils/localStorage'
 export default {
   mixins: [ebookMixin],
-  computed: {
-    getSectionName() {
-      return this.section ? this.navigation[this.section].label : ''
-    }
-  },
   data() {
     return {}
   },

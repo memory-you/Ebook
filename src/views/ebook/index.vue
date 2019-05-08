@@ -3,28 +3,34 @@
     class="ebook"
     ref="ebook"
   >
+    <ebook-header></ebook-header>
     <ebook-title></ebook-title>
     <ebook-reader></ebook-reader>
     <ebook-menu></ebook-menu>
+    <ebook-footer></ebook-footer>
     <ebook-bookmark>
     </ebook-bookmark>
   </div>
 </template>
 
 <script>
-import EbookReader from '../../components/ebook/EbookReader.vue'
 import EbookTitle from '../../components/ebook/EbookTitle.vue'
-import EbookMenu from '../../components/ebook/EbookMenu.vue'
 import EbookBookmark from '../../components/ebook/EbookBookmark.vue'
+import EbookHeader from '../../components/ebook/EbookHeader.vue'
+import EbookReader from '../../components/ebook/EbookReader.vue'
+import EbookFooter from '../../components/ebook/EbookFooter.vue'
+import EbookMenu from '../../components/ebook/EbookMenu.vue'
 import { getReadTime, saveReadTime } from '../../utils/localStorage'
 import { setInterval, clearInterval } from 'timers'
 import { ebookMixin } from '../../utils/mixin'
 export default {
   mixins: [ebookMixin],
   components: {
+    EbookHeader,
     EbookReader,
     EbookTitle,
     EbookMenu,
+    EbookFooter,
     EbookBookmark
   },
   watch: {
