@@ -31,7 +31,7 @@
 <script>
 import { realPx } from '../../utils/utils'
 import { ebookMixin } from '../../utils/mixin'
-import Bookmark from '../../components/ebook/Bookmark.vue'
+import Bookmark from '../../components/common/Bookmark.vue'
 import { setTimeout } from 'timers'
 import { getBookmark, saveBookmark } from '../../utils/localStorage'
 const BLUE = '#346cbc'

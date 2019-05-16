@@ -15,7 +15,27 @@
         </div>
       </div>
       <guess-you-like :data="guessYouLike"></guess-you-like>
-      <recommend :data="recommend"></recommend>
+      <recommend
+        :data="recommend"
+        class="recommend"
+      ></recommend>
+      <featured
+        :data="featured"
+        class="featured"
+        :titleText="$t('home.featured')"
+        :btnText="$t('home.seeAll')"
+      ></featured>
+      <div
+        class="category-list-wrapper"
+        v-for="(item, index) in categoryList"
+        :key="index"
+      >
+        <category-book :data="item"></category-book>
+      </div>
+      <category
+        class="categories"
+        :data="categories"
+      ></category>
     </scroll>
   </div>
 </template>
@@ -26,6 +46,9 @@ import Scroll from '../../components/common/Scroll'
 import GuessYouLike from '../../components/home/GuessYouLike'
 import FlapCard from '../../components/home/FlapCard'
 import Recommend from '../../components/home/Recommend'
+import Featured from '../../components/home/Featured'
+import CategoryBook from '../../components/home/CategoryBook'
+import Category from '../../components/home/Category'
 import { storeHomeMixin } from '../../utils/mixin'
 import { home } from '../../api/store'
 export default {
@@ -35,7 +58,10 @@ export default {
     Scroll,
     FlapCard,
     GuessYouLike,
-    Recommend
+    Recommend,
+    Featured,
+    CategoryBook,
+    Category
   },
   data() {
     return {
@@ -43,7 +69,10 @@ export default {
       random: null,
       banner: null,
       guessYouLike: null,
-      recommend: null
+      recommend: null,
+      featured: null,
+      categoryList: null,
+      categories: null
     }
   },
   methods: {
@@ -66,6 +95,9 @@ export default {
         this.banner = data.banner
         this.guessYouLike = data.guessYouLike
         this.recommend = data.recommend
+        this.featured = data.featured
+        this.categories = data.categories
+        this.categoryList = data.categoryList
       }
     })
   }
@@ -87,6 +119,18 @@ export default {
       background-repeat: no-repeat;
       background-size: 100% 100%;
     }
+  }
+  .recommend {
+    margin-top: px2rem(20);
+  }
+  .featured {
+    margin-top: px2rem(20);
+  }
+  .category-list-wrapper {
+    margin-top: px2rem(20);
+  }
+  .categories {
+    margin-top: px2rem(20);
   }
 }
 </style>

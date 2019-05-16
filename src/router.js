@@ -6,7 +6,7 @@ Vue.use(Router)
 export default new Router({
   routes: [{
       path: '/',
-      redirect: '/store'
+      redirect: '/store/shelf'
     },
     {
       path: '/ebook',
@@ -21,9 +21,21 @@ export default new Router({
       component: () => import('./views/store/index.vue'),
       redirect: '/store/home',
       children: [{
-        path: 'home',
-        component: () => import('./views/store/StoreHome.vue')
-      }]
+          path: 'shelf',
+          component: () => import('./views/store/StoreShelf.vue')
+        }, {
+          path: 'home',
+          component: () => import('./views/store/StoreHome.vue')
+        },
+        {
+          path: 'list',
+          component: () => import('./views/store/StoreList.vue')
+        },
+        {
+          path: 'detail',
+          component: () => import('./views/store/StoreDetail.vue')
+        }
+      ]
     }
   ]
 })

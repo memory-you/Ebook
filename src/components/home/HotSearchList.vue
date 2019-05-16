@@ -21,7 +21,7 @@
   </transition>
 </template>
 
-<script type="text/ecmascript-6">
+<script>
 import Scroll from '../common/Scroll'
 import HotSearch from './HotSearch'
 import { storeHomeMixin } from '../../utils/mixin'
