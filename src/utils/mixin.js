@@ -7,7 +7,7 @@ import {
   addCss,
   removeAllCss,
   getReadTimeByMinute
-} from './book'
+} from '../utils/book'
 import {
   getBookmark,
   saveLocation,
@@ -154,7 +154,7 @@ export const ebookMixin = {
       'setCover',
       'setMetadata',
       'setPaginate',
-      'setPagelist',
+      'setPageList',
       'setOffsetY',
       'setIsBookmark'
     ]),
@@ -175,7 +175,6 @@ export const ebookMixin = {
           break
         default:
           addCss(`${process.env.VUE_APP_RES_URL}/theme/theme_default.css`)
-          break
       }
     },
     refreshLocation() {
@@ -200,7 +199,7 @@ export const ebookMixin = {
           const totalPage = this.pagelist.length
           const currentPage = currentLocation.start.location
           if (currentPage && currentPage > 0) {
-            this.setPaginate(currentPage + ' / ' + totalPage)
+            this.setPaginate(currentPage + '/' + totalPage)
           } else {
             this.setPaginate('')
           }
@@ -227,7 +226,7 @@ export const ebookMixin = {
       this.setSettingVisible(-1)
       this.setFontFamilyVisible(false)
     },
-    getReadTimeText() {
+    getReadText() {
       return this.$t('book.haveRead').replace('$1', getReadTimeByMinute(this.fileName))
     }
   }

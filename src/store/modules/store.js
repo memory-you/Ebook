@@ -4,7 +4,7 @@ const store = {
     flapCardVisible: false,
     isEditMode: false,
     shelfList: [],
-    shelfSelected: [1, 2, 3],
+    shelfSelected: [],
     shelfTitleVisible: true,
     shelfCategory: [], // 书架分类列表数据
     currentType: 1, // 书架列表为1，书架分类列表为2

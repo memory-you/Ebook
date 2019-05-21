@@ -117,20 +117,10 @@ import Scroll from '../../components/common/Scroll'
 import Toast from '../../components/common/Toast'
 import { detail } from '../../api/store'
 import { px2rem, realPx } from '../../utils/utils'
-import { getLocalForage } from '../../utils/localForage'
-import {
-  getBookShelf,
-  saveBookShelf,
-  saveCover,
-  saveNavigation,
-  saveMetadata
-} from '../../utils/localStorage'
-import { addToShelf, removeFromBookShelf } from '../../utils/store'
-import { storeShelfMixin } from '../../utils/mixin'
 import Epub from 'epubjs'
+import { getLocalForage } from '../../utils/localForage'
 global.ePub = Epub
 export default {
-  mixins: [storeShelfMixin],
   components: {
     DetailTitle,
     Scroll,
@@ -174,12 +164,12 @@ export default {
       return this.metadata ? this.metadata.creator : ''
     },
     inBookShelf() {
-      if (this.bookItem && this.shelfList) {
+      if (this.bookItem && this.bookShelf) {
         const flatShelf = (function flatten(arr) {
           return [].concat(
             ...arr.map(v => (v.itemList ? [v, ...flatten(v.itemList)] : v))
           )
-        })(this.shelfList).filter(item => item.type === 1)
+        })(this.bookShelf).filter(item => item.type === 1)
         const book = flatShelf.filter(
           item => item.fileName === this.bookItem.fileName
         )
@@ -208,23 +198,14 @@ export default {
     }
   },
   methods: {
-    addOrRemoveShelf() {
-      if (this.inBookShelf) {
-        this.setShelfList(removeFromBookShelf(this.bookItem)).then(() => {
-          saveBookShelf(this.shelfList)
-        })
-      } else {
-        addToShelf(this.bookItem)
-        this.setShelfList(getBookShelf())
-      }
-    },
+    addOrRemoveShelf() {},
     showToast(text) {
       this.toastText = text
       this.$refs.toast.show()
     },
     readBook() {
       this.$router.push({
-        path: `/ebook/${this.bookItem.categoryText}|${this.fileName}`
+        path: `/ebook/${this.categoryText}|${this.fileName}`
       })
     },
     trialListening() {
@@ -278,12 +259,9 @@ export default {
       this.book = new Epub(url)
       this.book.loaded.metadata.then(metadata => {
         this.metadata = metadata
-        this.metadata.description = this.description
-        saveMetadata(this.fileName, this.metadata)
       })
       this.book.loaded.navigation.then(nav => {
         this.navigation = nav
-        saveNavigation(this.fileName, this.navigation)
         if (this.navigation.toc && this.navigation.toc.length > 1) {
           const candisplay = this.display(this.navigation.toc[1].href)
           if (candisplay) {
@@ -292,9 +270,9 @@ export default {
                 this.$refs.scroll.refresh()
               }
               this.displayed = true
-              // const reg = new RegExp('<.+?>', 'g')
-              // const text = section.output.replace(reg, '').replace(/\s\s/g, '')
-              // this.description = text
+              const reg = new RegExp('<.+?>', 'g')
+              const text = section.output.replace(reg, '').replace(/\s\s/g, '')
+              this.description = text
             })
           }
         }
@@ -307,13 +285,15 @@ export default {
         detail({
           fileName: this.fileName
         }).then(response => {
-          if (response.status === 200) {
+          if (
+            response.status === 200 &&
+            response.data.error_code === 0 &&
+            response.data.data
+          ) {
             const data = response.data.data
             this.bookItem = data
             this.cover = this.bookItem.cover
-            saveCover(this.fileName, this.cover)
             let rootFile = data.rootFile
-            this.description = data.introduction
             if (rootFile.startsWith('/')) {
               rootFile = rootFile.substring(1, rootFile.length)
             }
